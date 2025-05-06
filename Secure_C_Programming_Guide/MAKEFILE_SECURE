@@ -1,0 +1,24 @@
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror
+
+SRC_DIRS = BufferOverflow FormatString IntegerOverflow UseAfterFree
+
+BAD_SRC = $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*bad.c))
+BAD_OBJ = $(BAD_SRC:.c=.o)
+
+GOOD_SRC = $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*good.c))
+GOOD_OBJ = $(GOOD_SRC:.c=.o)
+
+all: vulnerable_demo secure_demo
+
+vulnerable_demo: $(BAD_OBJ)
+	$(CC) $(CFLAGS) -o $@ $^
+
+secure_demo: $(GOOD_OBJ)
+	$(CC) $(CFLAGS) -o $@ $^
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean:
+	rm -f $(BAD_OBJ) $(GOOD_OBJ) vulnerable_demo secure_demo
